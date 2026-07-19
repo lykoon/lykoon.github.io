@@ -40,6 +40,7 @@ function renderTiles(){
   PROJECTS.forEach(p => {
     const tile = document.createElement(p.status === "live" ? "a" : "div");
     tile.className = "tile live";
+    tile.dataset.name = p.name.toLowerCase();
     if (p.status === "live") {
       tile.href = p.url;
       tile.target = "_blank";
@@ -67,12 +68,37 @@ function renderTiles(){
   for (let i = 0; i < EMPTY_SLOTS; i++){
     const empty = document.createElement("div");
     empty.className = "tile empty";
+    empty.dataset.empty = "true";
     empty.innerHTML = `
       <div class="tile-icon">?</div>
       <span class="empty-label">RESERVED — NEXT BUILD</span>
     `;
     wrap.appendChild(empty);
   }
+}
+
+function setupSearch(){
+  const input = document.getElementById("searchInput");
+  const noResults = document.getElementById("noResults");
+
+  input.addEventListener("input", () => {
+    const term = input.value.trim().toLowerCase();
+    const tiles = document.querySelectorAll("#tiles .tile");
+    let anyVisible = false;
+
+    tiles.forEach(tile => {
+      if (tile.dataset.empty){
+        // "reserved" slots ko search ke dauran hide rakho, taake sirf real apps dikhein
+        tile.classList.toggle("hidden", term.length > 0);
+        return;
+      }
+      const matches = tile.dataset.name.includes(term);
+      tile.classList.toggle("hidden", !matches);
+      if (matches) anyVisible = true;
+    });
+
+    noResults.hidden = term.length === 0 || anyVisible;
+  });
 }
 
 function renderHeroGrid(){
@@ -90,3 +116,4 @@ document.getElementById("year").textContent = new Date().getFullYear();
 
 renderTiles();
 renderHeroGrid();
+setupSearch();
