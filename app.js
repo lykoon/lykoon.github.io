@@ -14,7 +14,8 @@ const PROJECTS = [
     name: "Lykoon Adds",
     tagline: "Complete simple tasks and get paid out — real rewards for real effort.",
     url: "https://lykoonadds.up.railway.app/",
-    initials: "LA",
+    icon: "assets/lk-icon.png",   // is app ka apna logo — isliye initials ki zaroorat nahi
+    initials: "LA",               // fallback agar icon load na ho
     status: "live"
   }
   // Yahan neeche naya project add karein, jaise:
@@ -22,7 +23,8 @@ const PROJECTS = [
   //   name: "App Ka Naam",
   //   tagline: "Ek line mein app kya karti hai.",
   //   url: "https://your-app-link.com/",
-  //   initials: "XX",
+  //   icon: "assets/appname-icon.png", // agar app ka apna logo hai to yahan daalein
+  //   initials: "XX",                  // agar logo nahi hai to sirf ye 2 letters dikhenge
   //   status: "live"
   // },
 ];
@@ -44,9 +46,13 @@ function renderTiles(){
       tile.rel = "noopener noreferrer";
     }
 
+    const iconInner = p.icon
+      ? `<img src="${p.icon}" alt="${p.name} logo">`
+      : p.initials;
+
     tile.innerHTML = `
       <div class="tile-top">
-        <div class="tile-icon">${p.initials}</div>
+        <div class="tile-icon">${iconInner}</div>
         <span class="badge"><span class="dot"></span>LIVE</span>
       </div>
       <div>
