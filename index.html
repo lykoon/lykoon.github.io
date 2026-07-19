@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lykoon Hub — One address for everything I ship</title>
+<meta name="description" content="Lykoon Hub — a single home for every app, tool, and website Lykoon builds.">
+<link rel="icon" href="assets/lk-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="assets/lk-icon.png" alt="Lykoon" class="brand-mark">
+    <span class="brand-word">lykoon<span class="accent-dot">hub</span></span>
+  </div>
+  <nav class="topnav">
+    <a href="#dock">The Dock</a>
+    <a href="#about">About</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-grid" aria-hidden="true" id="heroGrid"></div>
+    <p class="eyebrow">LYKOON // PORTFOLIO INDEX</p>
+    <h1>One address for<br>everything I ship.</h1>
+    <p class="hero-sub">Apps, tools, and small experiments — built one at a time,<br class="br-desktop"> and launched here the moment they're ready to use.</p>
+    <a href="#dock" class="hero-cta">See what's live <span class="arrow">→</span></a>
+  </section>
+
+  <section class="dock" id="dock">
+    <div class="section-head">
+      <h2>The Dock</h2>
+      <p class="section-sub">Every tile below is a real, working project. Open one and use it.</p>
+    </div>
+
+    <div class="tiles" id="tiles"><!-- rendered by app.js --></div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="about-card">
+      <p class="eyebrow">ABOUT THIS PAGE</p>
+      <h2>Why a hub, not a homepage.</h2>
+      <p>Every project here was built separately, at a different time, for a different reason. Lykoon Hub exists so none of them get lost — one link to remember, however many apps come after it.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-left">
+    <img src="assets/lk-icon.png" alt="" class="footer-mark">
+    <span>Lykoon Hub</span>
+  </div>
+  <span class="footer-year" id="year"></span>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
