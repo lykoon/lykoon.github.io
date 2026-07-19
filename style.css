@@ -48,14 +48,26 @@ a{ color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 28px 6vw;
+  padding: 28px clamp(20px, 6vw, 72px);
+  max-width: 1440px;
+  margin: 0 auto;
   position: relative;
   z-index: 2;
 }
 
-.brand{ display: flex; align-items: center; gap: 12px; }
+.brand{ display: flex; align-items: center; gap: 12px; perspective: 500px; }
 
-.brand-mark{ width: 34px; height: 34px; border-radius: 9px; }
+.brand-mark{
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  transition: transform 0.35s ease;
+  transform-style: preserve-3d;
+}
+.brand:hover .brand-mark{
+  transform: rotateX(10deg) rotateY(-14deg) scale(1.08);
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.45));
+}
 
 .brand-word{
   font-family: var(--font-display);
@@ -77,9 +89,11 @@ a{ color: inherit; text-decoration: none; }
 /* ---------- hero ---------- */
 .hero{
   position: relative;
-  padding: 9vh 6vw 12vh;
-  max-width: 900px;
+  padding: 9vh clamp(20px, 6vw, 72px) 12vh;
+  max-width: 1440px;
+  margin: 0 auto;
 }
+.hero-inner{ max-width: 900px; }
 
 .hero-grid{
   position: absolute;
@@ -149,7 +163,11 @@ a{ color: inherit; text-decoration: none; }
 .hero-cta:hover .arrow{ transform: translateX(3px); }
 
 /* ---------- dock section ---------- */
-.dock{ padding: 4vh 6vw 10vh; }
+.dock{
+  padding: 4vh clamp(20px, 6vw, 72px) 10vh;
+  max-width: 1440px;
+  margin: 0 auto;
+}
 
 .section-head{ margin-bottom: 40px; max-width: 560px; }
 .section-head h2{
@@ -263,6 +281,7 @@ a{ color: inherit; text-decoration: none; }
   background: var(--accent-soft);
   color: var(--accent);
   overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
 }
 .tile-icon img{
   width: 100%;
@@ -320,7 +339,11 @@ a{ color: inherit; text-decoration: none; }
 .tile:hover .tile-open .arrow{ transform: translateX(3px); }
 
 /* ---------- about ---------- */
-.about{ padding: 2vh 6vw 14vh; }
+.about{
+  padding: 2vh clamp(20px, 6vw, 72px) 14vh;
+  max-width: 1440px;
+  margin: 0 auto;
+}
 .about-card{
   border-top: 1px solid var(--border);
   padding-top: 40px;
@@ -335,27 +358,59 @@ a{ color: inherit; text-decoration: none; }
 
 /* ---------- footer ---------- */
 .footer{
+  border-top: 1px solid var(--border);
+}
+.footer-inner{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 26px 6vw 40px;
-  border-top: 1px solid var(--border);
+  padding: 26px clamp(20px, 6vw, 72px) 40px;
+  max-width: 1440px;
+  margin: 0 auto;
   color: var(--text-faint);
   font-size: 0.82rem;
 }
 .footer-left{ display: flex; align-items: center; gap: 10px; }
-.footer-mark{ width: 20px; height: 20px; border-radius: 6px; opacity: 0.8; }
+.footer-mark{ width: 20px; height: 20px; border-radius: 6px; opacity: 0.85; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4)); }
 
 /* ---------- responsive ---------- */
+
+/* Tablet: tighten spacing and shrink the decorative grid a bit */
+@media (max-width: 900px){
+  .hero-grid{ width: 300px; height: 300px; right: -6vw; top: -20px; }
+  .tiles{ grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+}
+
+/* Phones */
 @media (max-width: 640px){
-  .topbar{ padding: 22px 5vw; }
+  .topbar{ padding: 20px clamp(16px, 5vw, 40px); flex-wrap: wrap; row-gap: 10px; }
   .topnav{ gap: 18px; }
-  .hero{ padding: 6vh 5vw 8vh; }
-  .hero-grid{ width: 240px; height: 240px; right: -14vw; top: -20px; }
+  .hero{ padding: 6vh clamp(16px, 5vw, 40px) 8vh; }
+  .hero-grid{ width: 200px; height: 200px; right: -10vw; top: -16px; opacity: 0.6; }
   .br-desktop{ display: none; }
-  .dock, .about{ padding-left: 5vw; padding-right: 5vw; }
+  .dock, .about{ padding-left: clamp(16px, 5vw, 40px); padding-right: clamp(16px, 5vw, 40px); }
   .search-bar{ max-width: 100%; }
-  .footer{ padding: 22px 5vw 32px; flex-direction: column; gap: 10px; align-items: flex-start; }
+  .tiles{ grid-template-columns: 1fr; }
+  .tile{ padding: 20px; }
+  .footer-inner{
+    padding: 22px clamp(16px, 5vw, 40px) 32px;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+}
+
+/* Small phones: the decorative grid gets in the way more than it helps */
+@media (max-width: 400px){
+  .hero-grid{ display: none; }
+  .hero h1{ font-size: 2.1rem; }
+  .topnav{ gap: 14px; }
+  .topnav a{ font-size: 0.85rem; }
+}
+
+/* Large / ultra-wide monitors: let the hero visual breathe a bit more */
+@media (min-width: 1600px){
+  .hero-grid{ width: 480px; height: 480px; }
 }
 
 @media (prefers-reduced-motion: reduce){
