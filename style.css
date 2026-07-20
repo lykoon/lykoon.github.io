@@ -55,18 +55,26 @@ a{ color: inherit; text-decoration: none; }
   z-index: 2;
 }
 
-.brand{ display: flex; align-items: center; gap: 12px; perspective: 500px; }
+.brand{ display: flex; align-items: center; gap: 12px; perspective: 400px; }
 
 .brand-mark{
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  transition: transform 0.35s ease;
+  --s: 1;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   transform-style: preserve-3d;
+  filter: drop-shadow(0 5px 8px rgba(0,0,0,0.55));
+  animation: logoFloat 4.5s ease-in-out infinite;
+  transition: filter 0.3s ease;
 }
 .brand:hover .brand-mark{
-  transform: rotateX(10deg) rotateY(-14deg) scale(1.08);
-  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.45));
+  --s: 1.12;
+  filter: drop-shadow(0 8px 14px rgba(0,0,0,0.6));
+}
+
+@keyframes logoFloat{
+  0%, 100%{ transform: rotateX(9deg) rotateY(-15deg) scale(var(--s)); }
+  50%{ transform: rotateX(16deg) rotateY(-24deg) scale(var(--s)); }
 }
 
 .brand-word{
@@ -116,7 +124,11 @@ a{ color: inherit; text-decoration: none; }
 .hero-grid .cell.filled{
   border-color: var(--accent);
   background: var(--accent-soft);
-  box-shadow: 0 0 22px 2px rgba(47, 226, 184, 0.35);
+  animation: cellPulse 3.2s ease-in-out infinite;
+}
+@keyframes cellPulse{
+  0%, 100%{ box-shadow: 0 0 18px 1px rgba(var(--live-glow), 0.3); }
+  50%{ box-shadow: 0 0 28px 4px rgba(var(--live-glow), 0.55); }
 }
 
 .eyebrow{
@@ -244,6 +256,11 @@ a{ color: inherit; text-decoration: none; }
   border-color: var(--border-strong);
   background: var(--surface-2);
 }
+.tile.live:active{
+  transform: translateY(-1px) scale(0.98);
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
 
 .tile.empty{
   border-style: dashed;
@@ -370,8 +387,18 @@ a{ color: inherit; text-decoration: none; }
   color: var(--text-faint);
   font-size: 0.82rem;
 }
-.footer-left{ display: flex; align-items: center; gap: 10px; }
-.footer-mark{ width: 20px; height: 20px; border-radius: 6px; opacity: 0.85; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4)); }
+.footer-left{ display: flex; align-items: center; gap: 10px; perspective: 300px; }
+.footer-mark{
+  width: 20px; height: 20px; border-radius: 6px; opacity: 0.9;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  animation: logoFloatSmall 5.5s ease-in-out infinite;
+  animation-delay: -1.2s;
+}
+@keyframes logoFloatSmall{
+  0%, 100%{ transform: rotateX(9deg) rotateY(-15deg); }
+  50%{ transform: rotateX(15deg) rotateY(-22deg); }
+}
 
 /* ---------- responsive ---------- */
 
@@ -400,9 +427,10 @@ a{ color: inherit; text-decoration: none; }
   }
 }
 
-/* Small phones: the decorative grid gets in the way more than it helps */
+/* Small phones: shrink the decorative grid instead of removing it —
+   the pulsing cell gives the page some life even on a small screen */
 @media (max-width: 400px){
-  .hero-grid{ display: none; }
+  .hero-grid{ width: 130px; height: 130px; right: -8vw; top: -10px; opacity: 0.5; }
   .hero h1{ font-size: 2.1rem; }
   .topnav{ gap: 14px; }
   .topnav a{ font-size: 0.85rem; }
