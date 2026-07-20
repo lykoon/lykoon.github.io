@@ -17,7 +17,14 @@ const PROJECTS = [
     icon: "assets/lk-icon.png",   // is app ka apna logo — isliye initials ki zaroorat nahi
     initials: "LA",               // fallback agar icon load na ho
     status: "live"
-  }
+  },
+   {
+      name: "Academy",
+      tagline: "This is academy of sinice — webpage.",
+      url: "https://alnaseer.vercel.app/",
+      initials: "UR",
+      status: "live"
+   },
   // Yahan neeche naya project add karein, jaise:
   // {
   //   name: "App Ka Naam",
