@@ -14,6 +14,8 @@
 <body>
 
 <div class="grain"></div>
+<div class="ambient-glow"></div>
+<div class="ambient-glow secondary"></div>
 
 <header class="topbar">
   <div class="brand">
@@ -58,6 +60,7 @@
   <nav class="topnav">
     <a href="#dock">The Dock</a>
     <a href="#about">About</a>
+    <a href="#feedback">Feedback</a>
   </nav>
 </header>
 
@@ -73,7 +76,7 @@
   </section>
 
   <section class="dock" id="dock">
-    <div class="section-head">
+    <div class="section-head reveal-target">
       <h2>The Dock</h2>
       <p class="section-sub">Every tile below is a real, working project. Open one and use it.</p>
     </div>
@@ -98,10 +101,25 @@
   </section>
 
   <section class="about" id="about">
-    <div class="about-card">
+    <div class="about-card reveal-target">
       <p class="eyebrow">ABOUT THIS PAGE</p>
       <h2>Why a hub, not a homepage.</h2>
       <p>Every project here was built separately, at a different time, for a different reason. Lykoon Hub exists so none of them get lost — one link to remember, however many apps come after it.</p>
+    </div>
+  </section>
+
+  <section class="feedback" id="feedback">
+    <div class="feedback-card reveal-target">
+      <p class="eyebrow">GET IN TOUCH</p>
+      <h2>Got a thought? I'm listening.</h2>
+      <p class="feedback-sub">Found a bug, want a feature, or just have something to say — drop it below and it'll land straight in my inbox at <a href="mailto:lykoonofficial@gmail.com" class="feedback-email">lykoonofficial@gmail.com</a>.</p>
+
+      <form id="feedbackForm" class="feedback-form">
+        <input type="text" id="fbName" class="feedback-input" placeholder="Your name (optional)" autocomplete="off">
+        <textarea id="fbMessage" class="feedback-textarea" rows="4" placeholder="Your feedback…" required></textarea>
+        <button type="submit" class="feedback-submit">Send Feedback <span class="arrow">→</span></button>
+      </form>
+      <p class="feedback-note" id="feedbackNote" hidden>Opening your email app… if nothing happens, email me directly at <a href="mailto:lykoonofficial@gmail.com">lykoonofficial@gmail.com</a>.</p>
     </div>
   </section>
 </main>
@@ -142,7 +160,10 @@
       </svg>
       <span>Lykoon Hub</span>
     </div>
-    <span class="footer-year" id="year"></span>
+    <div class="footer-right">
+      <a href="mailto:lykoonofficial@gmail.com" class="footer-email">lykoonofficial@gmail.com</a>
+      <span class="footer-year" id="year"></span>
+    </div>
   </div>
 </footer>
 

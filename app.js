@@ -18,13 +18,13 @@ const PROJECTS = [
     initials: "LA",               // fallback agar icon load na ho
     status: "live"
   },
-   {
-      name: "Academy",
-      tagline: "This is academy of sinice — webpage.",
-      url: "https://alnaseer.vercel.app/",
-      initials: "UR",
-      status: "live"
-   },
+  {
+    name: "Academy",
+    tagline: "An academy of science — learning resources and courses.",
+    url: "https://alnaseer.vercel.app/",
+    initials: "UR",
+    status: "live"
+  }
   // Yahan neeche naya project add karein, jaise:
   // {
   //   name: "App Ka Naam",
@@ -38,16 +38,20 @@ const PROJECTS = [
 
 /* Kitne khaali "coming soon" slots dikhane hain jab tak
    naye projects add nahi hote */
-const EMPTY_SLOTS = 3;
+const EMPTY_SLOTS = 2;
 
 function renderTiles(){
   const wrap = document.getElementById("tiles");
   wrap.innerHTML = "";
 
+  let index = 0;
+
   PROJECTS.forEach(p => {
     const tile = document.createElement(p.status === "live" ? "a" : "div");
-    tile.className = "tile live";
+    tile.className = "tile live reveal-target";
     tile.dataset.name = p.name.toLowerCase();
+    tile.style.transitionDelay = `${index * 70}ms`;
+    index++;
     if (p.status === "live") {
       tile.href = p.url;
       tile.target = "_blank";
@@ -74,8 +78,10 @@ function renderTiles(){
 
   for (let i = 0; i < EMPTY_SLOTS; i++){
     const empty = document.createElement("div");
-    empty.className = "tile empty";
+    empty.className = "tile empty reveal-target";
     empty.dataset.empty = "true";
+    empty.style.transitionDelay = `${index * 70}ms`;
+    index++;
     empty.innerHTML = `
       <div class="tile-icon">?</div>
       <span class="empty-label">RESERVED — NEXT BUILD</span>
@@ -119,8 +125,51 @@ function renderHeroGrid(){
   }
 }
 
+function setupFeedback(){
+  const form = document.getElementById("feedbackForm");
+  const note = document.getElementById("feedbackNote");
+  const FEEDBACK_EMAIL = "lykoonofficial@gmail.com";
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("fbName").value.trim();
+    const message = document.getElementById("fbMessage").value.trim();
+    if (!message) return;
+
+    const subject = `Lykoon Hub feedback${name ? " from " + name : ""}`;
+    const body = message + (name ? `\n\n— ${name}` : "");
+    const mailLink = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    window.location.href = mailLink;
+    note.hidden = false;
+    form.reset();
+  });
+}
+
+function setupScrollReveal(){
+  const targets = document.querySelectorAll(".reveal-target");
+  if (!("IntersectionObserver" in window)){
+    return; // purane browsers me sab kuch bas normally visible rahega
+  }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting){
+        entry.target.classList.add("in-view");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  targets.forEach(el => {
+    el.classList.add("reveal");
+    observer.observe(el);
+  });
+}
+
 document.getElementById("year").textContent = new Date().getFullYear();
 
 renderTiles();
 renderHeroGrid();
 setupSearch();
+setupFeedback();
+setupScrollReveal();
