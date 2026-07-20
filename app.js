@@ -22,7 +22,7 @@ const PROJECTS = [
     name: "Academy",
     tagline: "An academy of science — learning resources and courses.",
     url: "https://alnaseer.vercel.app/",
-    initials: "UR",
+    initials: "RU",
     status: "live"
   }
   // Yahan neeche naya project add karein, jaise:
