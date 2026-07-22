@@ -14,7 +14,7 @@ const PROJECTS = [
     name: "Lykoon Adds",
     tagline: "Complete simple tasks and get paid out — real rewards for real effort.",
     url: "https://lykoonadds.up.railway.app/",
-    icon: "assets/lk-icon.png",   // is app ka apna logo — isliye initials ki zaroorat nahi
+    icon: "assets/lykoon.jpg",   // coin + checkmark mark — matches the app's reward theme
     initials: "LA",               // fallback agar icon load na ho
     status: "live"
   },
@@ -22,6 +22,7 @@ const PROJECTS = [
     name: "Academy",
     tagline: "An academy of science — learning resources and courses.",
     url: "https://alnaseer.vercel.app/",
+    icon: "assets/academy-icon.svg",   // graduation-cap mark — matches the academic theme
     initials: "RU",
     status: "live"
   }
@@ -47,31 +48,36 @@ function renderTiles(){
   let index = 0;
 
   PROJECTS.forEach(p => {
-    const tile = document.createElement(p.status === "live" ? "a" : "div");
-    tile.className = "tile live reveal-target";
+    const isLive = p.status === "live";
+    const tile = document.createElement(isLive ? "a" : "div");
+    tile.className = `tile ${isLive ? "live" : "soon"} reveal-target`;
     tile.dataset.name = p.name.toLowerCase();
     tile.style.transitionDelay = `${index * 70}ms`;
     index++;
-    if (p.status === "live") {
+    if (isLive) {
       tile.href = p.url;
       tile.target = "_blank";
       tile.rel = "noopener noreferrer";
     }
 
     const iconInner = p.icon
-      ? `<img src="${p.icon}" alt="${p.name} logo">`
+      ? `<img src="${p.icon}" alt="${p.name} logo" loading="lazy" decoding="async" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${p.initials}'}))">`
       : p.initials;
+
+    const badge = isLive
+      ? `<span class="badge"><span class="dot"></span>LIVE</span>`
+      : `<span class="badge badge-soon">SOON</span>`;
 
     tile.innerHTML = `
       <div class="tile-top">
         <div class="tile-icon">${iconInner}</div>
-        <span class="badge"><span class="dot"></span>LIVE</span>
+        ${badge}
       </div>
       <div>
         <div class="tile-name">${p.name}</div>
         <p class="tile-tagline">${p.tagline}</p>
       </div>
-      <span class="tile-open">Open <span class="arrow">→</span></span>
+      ${isLive ? `<span class="tile-open">Open <span class="arrow">→</span></span>` : `<span class="tile-open tile-open-soon">Coming soon</span>`}
     `;
     wrap.appendChild(tile);
   });
@@ -166,6 +172,47 @@ function setupScrollReveal(){
   });
 }
 
+function setupHeaderScroll(){
+  const header = document.querySelector(".topbar");
+  if (!header) return;
+
+  let progressEl = header.querySelector(".scroll-progress");
+  if (!progressEl){
+    progressEl = document.createElement("span");
+    progressEl.className = "scroll-progress";
+    progressEl.setAttribute("aria-hidden", "true");
+    header.appendChild(progressEl);
+  }
+
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      header.classList.toggle("is-scrolled", window.scrollY > 8);
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+      progressEl.style.setProperty("--progress", `${pct}%`);
+      ticking = false;
+    });
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+}
+
+function setupTileSpotlight(){
+  // Sirf fine-pointer (mouse/trackpad) devices par — touch par iska koi fayda nahi
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+  document.addEventListener("pointermove", (e) => {
+    const tile = e.target.closest(".tile.live");
+    if (!tile) return;
+    const rect = tile.getBoundingClientRect();
+    tile.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+    tile.style.setProperty("--my", `${e.clientY - rect.top}px`);
+  }, { passive: true });
+}
+
 document.getElementById("year").textContent = new Date().getFullYear();
 
 renderTiles();
@@ -173,3 +220,5 @@ renderHeroGrid();
 setupSearch();
 setupFeedback();
 setupScrollReveal();
+setupHeaderScroll();
+setupTileSpotlight();
