@@ -41,6 +41,17 @@ const PROJECTS = [
    naye projects add nahi hote */
 const EMPTY_SLOTS = 2;
 
+function renderStatusStrip(){
+  const el = document.getElementById("statusStrip");
+  if (!el) return;
+  const liveCount = PROJECTS.filter(p => p.status === "live").length;
+  const soonCount = PROJECTS.filter(p => p.status !== "live").length + EMPTY_SLOTS;
+  el.innerHTML = `
+    <span class="status-chip"><span class="dot"></span>${liveCount} live now</span>
+    <span class="status-chip status-chip-muted">${soonCount} in the works</span>
+  `;
+}
+
 function renderTiles(){
   const wrap = document.getElementById("tiles");
   wrap.innerHTML = "";
@@ -208,14 +219,29 @@ function setupTileSpotlight(){
     const tile = e.target.closest(".tile.live");
     if (!tile) return;
     const rect = tile.getBoundingClientRect();
-    tile.style.setProperty("--mx", `${e.clientX - rect.left}px`);
-    tile.style.setProperty("--my", `${e.clientY - rect.top}px`);
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    tile.style.setProperty("--mx", `${x}px`);
+    tile.style.setProperty("--my", `${y}px`);
+
+    const rx = ((y / rect.height) - 0.5) * -6;
+    const ry = ((x / rect.width) - 0.5) * 6;
+    tile.style.setProperty("--rx", `${rx.toFixed(2)}deg`);
+    tile.style.setProperty("--ry", `${ry.toFixed(2)}deg`);
   }, { passive: true });
+
+  document.addEventListener("pointerleave", (e) => {
+    const tile = e.target.closest && e.target.closest(".tile.live");
+    if (!tile) return;
+    tile.style.setProperty("--rx", `0deg`);
+    tile.style.setProperty("--ry", `0deg`);
+  }, { passive: true, capture: true });
 }
 
 document.getElementById("year").textContent = new Date().getFullYear();
 
 renderTiles();
+renderStatusStrip();
 renderHeroGrid();
 setupSearch();
 setupFeedback();
