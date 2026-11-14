@@ -14,8 +14,9 @@ const PROJECTS = [
     name: "Lykoon Adds",
     tagline: "Complete simple tasks and get paid out — real rewards for real effort.",
     url: "https://lykoonadds.up.railway.app/",
-    icon: "assets/lykoon.jpg",   // coin + checkmark mark — matches the app's reward theme
+    icon: "assets/lykoon.png",   // coin + checkmark mark — matches the app's reward theme
     initials: "LA",               // fallback agar icon load na ho
+    kind: "Web app",
     status: "live"
   },
   {
@@ -23,7 +24,18 @@ const PROJECTS = [
     tagline: "An academy of science — learning resources and courses.",
     url: "https://alnaseer.vercel.app/",
     icon: "assets/academy-icon.svg",   // graduation-cap mark — matches the academic theme
-    initials: "RU",
+    initials: "AC",
+    kind: "Web app",
+    status: "live"
+  },
+  {
+    name: "Unfollow by Lykoon",
+    tagline: "Free desktop dashboard to unfollow in bulk on Instagram and TikTok.",
+    url: "#download",
+    cta: "Download",
+    icon: "assets/unfollow-icon.svg",
+    initials: "UL",
+    kind: "Desktop app",
     status: "live"
   }
   // Yahan neeche naya project add karein, jaise:
@@ -39,17 +51,17 @@ const PROJECTS = [
 
 /* Kitne khaali "coming soon" slots dikhane hain jab tak
    naye projects add nahi hote */
-const EMPTY_SLOTS = 2;
+const EMPTY_SLOTS = 1;
 
 function renderStatusStrip(){
   const el = document.getElementById("statusStrip");
   if (!el) return;
-  const liveCount = PROJECTS.filter(p => p.status === "live").length;
-  const soonCount = PROJECTS.filter(p => p.status !== "live").length + EMPTY_SLOTS;
-  el.innerHTML = `
-    <span class="status-chip"><span class="dot"></span>${liveCount} live now</span>
-    <span class="status-chip status-chip-muted">${soonCount} in the works</span>
-  `;
+  const live = PROJECTS.filter(p => p.status === "live");
+  const web = live.filter(p => p.kind === "Web app").length;
+  const desk = live.filter(p => p.kind === "Desktop app").length;
+  const soon = PROJECTS.filter(p => p.status !== "live").length + EMPTY_SLOTS;
+  const card = (n, label, cls) => `<div class="stat ${cls || ""}"><b>${n}</b><span>${label}</span></div>`;
+  el.innerHTML = card(live.length, "Live now", "s-live") + card(web, "Websites", "s-web") + card(desk, "Desktop apps", "s-desk") + card(soon, "In the works", "");
 }
 
 function renderTiles(){
@@ -61,14 +73,17 @@ function renderTiles(){
   PROJECTS.forEach(p => {
     const isLive = p.status === "live";
     const tile = document.createElement(isLive ? "a" : "div");
-    tile.className = `tile ${isLive ? "live" : "soon"} reveal-target`;
+    tile.className = `tile ${isLive ? "live" : "soon"} ${p.kind === "Desktop app" ? "k-desk" : "k-web"} reveal-target`;
     tile.dataset.name = p.name.toLowerCase();
+    tile.dataset.kind = p.kind || "";
     tile.style.transitionDelay = `${index * 70}ms`;
     index++;
     if (isLive) {
       tile.href = p.url;
-      tile.target = "_blank";
-      tile.rel = "noopener noreferrer";
+      if (!p.url.startsWith("#")) {      // "#..." = scroll inside this page, everything else opens a new tab
+        tile.target = "_blank";
+        tile.rel = "noopener noreferrer";
+      }
     }
 
     const iconInner = p.icon
@@ -76,19 +91,28 @@ function renderTiles(){
       : p.initials;
 
     const badge = isLive
-      ? `<span class="badge"><span class="dot"></span>LIVE</span>`
-      : `<span class="badge badge-soon">SOON</span>`;
+      ? `<span class="badge"><span class="dot"></span>Live</span>`
+      : `<span class="badge badge-soon">Soon</span>`;
+
+    const isDesk = p.kind === "Desktop app";
+    let host = "";
+    try { host = new URL(p.url).hostname; } catch (e) {}
+    const bar = isDesk
+      ? `<span class="tile-url">Windows · Mac · Linux</span>`
+      : `<span class="tile-url"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" stroke="currentColor" stroke-width="1.5"/></svg>${host}</span>`;
+    const kindLabel = isDesk ? "Desktop app" : "Website";
 
     tile.innerHTML = `
+      <div class="tile-bar"><i></i><i></i><i></i>${bar}</div>
       <div class="tile-top">
         <div class="tile-icon">${iconInner}</div>
         ${badge}
       </div>
-      <div>
+      <div class="tile-body">
         <div class="tile-name">${p.name}</div>
         <p class="tile-tagline">${p.tagline}</p>
       </div>
-      ${isLive ? `<span class="tile-open">Open <span class="arrow">→</span></span>` : `<span class="tile-open tile-open-soon">Coming soon</span>`}
+      <div class="tile-foot"><span class="tile-kind">${kindLabel}</span>${isLive ? `<span class="tile-open">${p.cta || "Open"} <span class="arrow">→</span></span>` : `<span class="tile-open tile-open-soon">Coming soon</span>`}</div>
     `;
     wrap.appendChild(tile);
   });
@@ -101,7 +125,7 @@ function renderTiles(){
     index++;
     empty.innerHTML = `
       <div class="tile-icon">?</div>
-      <span class="empty-label">RESERVED — NEXT BUILD</span>
+      <span class="empty-label">Next build goes here</span>
     `;
     wrap.appendChild(empty);
   }
@@ -110,25 +134,73 @@ function renderTiles(){
 function setupSearch(){
   const input = document.getElementById("searchInput");
   const noResults = document.getElementById("noResults");
+  const seg = document.getElementById("seg");
+  const countEl = document.getElementById("countLabel");
+  let kind = "all";
 
-  input.addEventListener("input", () => {
+  function apply(){
     const term = input.value.trim().toLowerCase();
-    const tiles = document.querySelectorAll("#tiles .tile");
-    let anyVisible = false;
-
-    tiles.forEach(tile => {
+    let shown = 0;
+    document.querySelectorAll("#tiles .tile").forEach(tile => {
       if (tile.dataset.empty){
-        // "reserved" slots ko search ke dauran hide rakho, taake sirf real apps dikhein
-        tile.classList.toggle("hidden", term.length > 0);
+        tile.classList.toggle("hidden", term.length > 0 || kind !== "all");
         return;
       }
-      const matches = tile.dataset.name.includes(term);
-      tile.classList.toggle("hidden", !matches);
-      if (matches) anyVisible = true;
+      const ok = tile.dataset.name.includes(term) && (kind === "all" || tile.dataset.kind === kind);
+      tile.classList.toggle("hidden", !ok);
+      if (ok) shown++;
     });
+    noResults.hidden = shown > 0;
+    countEl.textContent = shown + (shown === 1 ? " app" : " apps");
+  }
 
-    noResults.hidden = term.length === 0 || anyVisible;
+  input.addEventListener("input", apply);
+  seg.addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    kind = b.dataset.kind;
+    seg.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+    apply();
   });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "/" && !/input|textarea/i.test(document.activeElement.tagName)){
+      e.preventDefault();
+      input.focus();
+    }
+  });
+  apply();
+}
+
+/* Download window: stays closed until a tile / button / link to #download is clicked */
+function setupDownloadDialog(){
+  const dlg = document.getElementById("dlDialog");
+  if (!dlg || typeof dlg.showModal !== "function") return;
+  let opener = null;
+
+  function open(from){
+    if (dlg.open) return;
+    opener = from || null;
+    dlg.showModal();
+    document.body.classList.add("dl-open");
+    history.replaceState(null, "", "#download");
+  }
+  function close(){ if (dlg.open) dlg.close(); }
+
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest('a[href="#download"]');
+    if (!a) return;
+    e.preventDefault();
+    open(a);
+  });
+  dlg.querySelector("[data-close]").addEventListener("click", close);
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) close(); });   // click on the dark area
+  dlg.addEventListener("close", () => {
+    document.body.classList.remove("dl-open");
+    if (location.hash === "#download") history.replaceState(null, "", location.pathname + location.search);
+    if (opener && opener.focus) opener.focus({ preventScroll: true });
+  });
+  window.addEventListener("hashchange", () => { if (location.hash === "#download") open(null); });
+  if (location.hash === "#download") open(null);   // direct link still works
 }
 
 function renderHeroGrid(){
@@ -161,6 +233,19 @@ function setupFeedback(){
     note.hidden = false;
     form.reset();
   });
+}
+
+function setupDownloadHint(){
+  // Show the start instruction that matches the visitor's computer
+  const el = document.getElementById("osHint");
+  if (!el) return;
+  const ua = (navigator.userAgent || "") + " " + (navigator.platform || "");
+  let html = "";
+  if (/android|iphone|ipad|ipod/i.test(ua)) html = "This tool runs on a <b>computer</b> (Windows, Mac or Linux). Open this page on your computer to download it.";
+  else if (/win/i.test(ua)) html = "You are on Windows: double-click <code>Start-Windows.bat</code>.";
+  else if (/mac/i.test(ua)) html = "You are on a Mac: double-click <code>Start-Mac.command</code> (first time: right-click, then Open).";
+  else if (/linux|x11|cros/i.test(ua)) html = "You are on Linux: run <code>./Start-Linux.sh</code> in the folder (or <code>python3 unfollow_app.py</code>).";
+  if (html) el.innerHTML = html;
 }
 
 function setupScrollReveal(){
@@ -244,7 +329,9 @@ renderTiles();
 renderStatusStrip();
 renderHeroGrid();
 setupSearch();
+setupDownloadDialog();
 setupFeedback();
+setupDownloadHint();
 setupScrollReveal();
 setupHeaderScroll();
 setupTileSpotlight();

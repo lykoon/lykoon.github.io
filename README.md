@@ -1,2 +1,7 @@
 # lykoon.github.io
-Lykoon Hub - Official portfolio website for Lykoon projects, web applications, and android apps.
+
+Lykoon Hub - official portfolio website for Lykoon projects, web applications and tools.
+
+Includes the download page for **Unfollow by Lykoon** (`#download`).
+
+Contact: lykoonofficial@gmail.com

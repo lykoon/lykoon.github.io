@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://lykoon.github.io/sitemap.xml
